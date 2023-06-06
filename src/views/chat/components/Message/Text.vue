@@ -58,8 +58,10 @@ const wrapClass = computed(() => {
 
 const text = computed(() => {
   const value = props.text ?? ''
-  if (!props.asRawText)
-    return mdi.render(value)
+  if (!markmapVisible.value) {
+    if (!props.asRawText)
+      return mdi.render(value)
+  }
   return value
 })
 
@@ -113,6 +115,8 @@ onUnmounted(() => {
   <div class="text-black" :class="wrapClass">
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion">
+        {{ markmapVisible }}
+        {{ text }}
         <div v-if="markmapVisible">
           <MarkMap v-if="text" :init-value="text" />
         </div>
