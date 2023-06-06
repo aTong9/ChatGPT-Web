@@ -56,10 +56,6 @@ dataSources.value.forEach((item, index) => {
 // const markmapVisible = computed(() => {
 //   return markmapStore.markmapVisible
 // })
-
-// const markmapSend = () => {
-
-// }
 function handleSubmit() {
   onConversation()
 }
