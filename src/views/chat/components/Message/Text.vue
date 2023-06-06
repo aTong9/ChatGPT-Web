@@ -114,10 +114,11 @@ onUnmounted(() => {
 <!-- inversion true:右边  false: left -->
 <template>
   <div class="text-black" :class="wrapClass">
+    {{ inversion }}
+    {{ markmapVisible }}
+    {{ text }}
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion">
-        {{ markmapVisible }}
-        {{ text }}
         <div v-if="markmapVisible">
           <MarkMap v-if="text" :init-value="text" />
         </div>
