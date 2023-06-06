@@ -58,6 +58,7 @@ const wrapClass = computed(() => {
 
 const text = computed(() => {
   const value = props.text ?? ''
+  // 思维导图不需要用 mdi 解析
   if (!markmapVisible.value) {
     if (!props.asRawText)
       return mdi.render(value)
