@@ -12,7 +12,7 @@ import { useUsingContext } from './hooks/useUsingContext'
 import HeaderComponent from './components/Header/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { useChatStore, usePromptStore } from '@/store'
+import { useChatStore, useMarkMapStoreWithout, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
 
@@ -42,6 +42,7 @@ const inputRef = ref<Ref | null>(null)
 
 // 添加PromptStore
 const promptStore = usePromptStore()
+const markmapStore = useMarkMapStoreWithout()
 
 // 使用storeToRefs，保证store修改后，联想部分能够重新渲染
 const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
@@ -52,6 +53,13 @@ dataSources.value.forEach((item, index) => {
     updateChatSome(+uuid, index, { loading: false })
 })
 
+const markmapVisible = computed(() => {
+  return markmapStore.markmapVisible
+})
+
+// const markmapSend = () => {
+
+// }
 function handleSubmit() {
   onConversation()
 }
@@ -66,6 +74,14 @@ async function onConversation() {
     return
 
   controller = new AbortController()
+  // if (markmapVisible.value) { // 思维导图
+  //   message = `将以下内容用 Markdown 语法生成思维导图\n${prompt.value}`
+  // }
+  if (prompt.value.includes('思维导图'))
+    markmapStore.setMarkMapVisible(true)
+
+  else
+    markmapStore.setMarkMapVisible(false)
 
   addChat(
     +uuid,
@@ -101,6 +117,7 @@ async function onConversation() {
       requestOptions: { prompt: message, options: { ...options } },
     },
   )
+  // console.log('lastContext', lastContext)
   scrollToBottom()
 
   try {
@@ -466,16 +483,13 @@ onUnmounted(() => {
 <template>
   <div class="flex flex-col w-full h-full">
     <HeaderComponent
-      v-if="isMobile"
-      :using-context="usingContext"
-      @export="handleExport"
+      v-if="isMobile" :using-context="usingContext" @export="handleExport"
       @toggle-using-context="toggleUsingContext"
     />
     <main class="flex-1 overflow-hidden">
       <div id="scrollRef" ref="scrollRef" class="h-full overflow-hidden overflow-y-auto">
         <div
-          id="image-wrapper"
-          class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
+          id="image-wrapper" class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
           <template v-if="!dataSources.length">
@@ -486,23 +500,24 @@ onUnmounted(() => {
           </template>
           <template v-else>
             <div>
-              <Message
-                v-for="(item, index) of dataSources"
-                :key="index"
-                :date-time="item.dateTime"
-                :text="item.text"
-                :inversion="item.inversion"
-                :error="item.error"
-                :loading="item.loading"
-                @regenerate="onRegenerate(index)"
-                @delete="handleDelete(index)"
-              />
+              <template v-for="(item, index) of dataSources" :key="index">
+                <!-- <template v-if="markmapVisible">
+                  <MarkMap :init-value="item.text" />
+                </template> -->
+                <!-- <template v-else> -->
+                <Message
+                  :date-time="item.dateTime" :text="item.text" :inversion="item.inversion" :error="item.error"
+                  :loading="item.loading" @regenerate="onRegenerate(index)" @delete="handleDelete(index)"
+                />
+                <!-- </template> -->
+              </template>
+
               <div class="sticky bottom-0 left-0 flex justify-center">
                 <NButton v-if="loading" type="warning" @click="handleStop">
                   <template #icon>
                     <SvgIcon icon="ri:stop-circle-line" />
                   </template>
-									{{ t('common.stopResponding') }}
+                  {{ t('common.stopResponding') }}
                 </NButton>
               </div>
             </div>
@@ -531,15 +546,9 @@ onUnmounted(() => {
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
               <NInput
-                ref="inputRef"
-                v-model:value="prompt"
-                type="textarea"
-                :placeholder="placeholder"
-                :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }"
-                @input="handleInput"
-                @focus="handleFocus"
-                @blur="handleBlur"
-                @keypress="handleEnter"
+                ref="inputRef" v-model:value="prompt" type="textarea" :placeholder="placeholder"
+                :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }" @input="handleInput" @focus="handleFocus"
+                @blur="handleBlur" @keypress="handleEnter"
               />
             </template>
           </NAutoComplete>

@@ -7,6 +7,7 @@ import hljs from 'highlight.js'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { t } from '@/locales'
 import { copyToClip } from '@/utils/copy'
+import { useMarkMapStoreWithout } from '@/store'
 
 interface Props {
   inversion?: boolean
@@ -17,8 +18,12 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const markmapStore = useMarkMapStoreWithout()
 
 const { isMobile } = useBasicLayout()
+const markmapVisible = computed(() => {
+  return markmapStore.markmapVisible
+})
 
 const textRef = ref<HTMLElement>()
 
@@ -103,14 +108,21 @@ onUnmounted(() => {
 })
 </script>
 
+<!-- inversion true:右边  false: left -->
 <template>
   <div class="text-black" :class="wrapClass">
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion">
-        <div v-if="!asRawText" class="markdown-body" v-html="text" />
-        <div v-else class="whitespace-pre-wrap" v-text="text" />
+        <div v-if="markmapVisible">
+          <MarkMap v-if="text" :init-value="text" />
+        </div>
+        <template v-else>
+          <div v-if="!asRawText" class="markdown-body" v-html="text" />
+          <div v-else class="whitespace-pre-wrap" v-text="text" />
+        </template>
       </div>
       <div v-else class="whitespace-pre-wrap" v-text="text" />
+
       <template v-if="loading">
         <span class="dark:text-white w-[4px] h-[20px] block animate-blink" />
       </template>

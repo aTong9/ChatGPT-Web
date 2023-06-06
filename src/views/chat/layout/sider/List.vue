@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { NInput, NPopconfirm, NScrollbar } from 'naive-ui'
 import { SvgIcon } from '@/components/common'
-import { useAppStore, useChatStore } from '@/store'
+import { useAppStore, useChatStore, useMarkMapStoreWithout } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { debounce } from '@/utils/functions/debounce'
 
@@ -10,10 +10,12 @@ const { isMobile } = useBasicLayout()
 
 const appStore = useAppStore()
 const chatStore = useChatStore()
+const markmapStore = useMarkMapStoreWithout()
 
 const dataSources = computed(() => chatStore.history)
 
 async function handleSelect({ uuid }: Chat.History) {
+  markmapStore.setMarkMapVisible(false)
   if (isActive(uuid))
     return
 
