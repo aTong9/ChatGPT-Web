@@ -85,11 +85,11 @@ watch(
         <div class="flex-1 min-h-0 pb-4 overflow-hidden">
           <List />
         </div>
-        <div class="p-4 pb-0">
+        <!-- <div class="p-4 pb-0">
           <NButton block @click="markmapCLick">
             思维导图
           </NButton>
-        </div>
+        </div> -->
         <div class="p-4">
           <NButton class="mt-4" block @click="show = true">
             {{ $t('store.siderButton') }}
