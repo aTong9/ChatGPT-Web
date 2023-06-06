@@ -24,9 +24,9 @@ function handleAdd() {
     appStore.setSiderCollapsed(true)
 }
 
-function markmapCLick() {
-  markmapStore.setMarkMapVisible(true)
-}
+// function markmapCLick() {
+//   markmapStore.setMarkMapVisible(true)
+// }
 
 function handleUpdateCollapsed() {
   appStore.setSiderCollapsed(!collapsed.value)

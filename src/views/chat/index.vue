@@ -53,9 +53,9 @@ dataSources.value.forEach((item, index) => {
     updateChatSome(+uuid, index, { loading: false })
 })
 
-const markmapVisible = computed(() => {
-  return markmapStore.markmapVisible
-})
+// const markmapVisible = computed(() => {
+//   return markmapStore.markmapVisible
+// })
 
 // const markmapSend = () => {
 
